@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <title>Codex &ndash; Code Execution GUI</title>
+    <script src="https://pyodide-cdn2.iodide.io/v0.15.0/full/pyodide.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    // Give a more precise alias.
+    let pyodideLoader = languagePluginLoader
+    
+    pyodideLoader.then(function() {
+        console.log(pyodide.runPython('import sys\nsys.version'))
+    })
+</script>
+</body>
+</html>
