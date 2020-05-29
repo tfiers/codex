@@ -10,15 +10,29 @@
     <div id='status'>
         Loading pyodide..
     </div>
+    <input type="text" id="input">
+    <div id="output"></div>
     <script type="text/javascript">
         // Give a more precise alias to this Promise object.
-        let pyodideLoader = languagePluginLoader
-        let t0 = Date.now()
-        // When the promise resolves:
+        const pyodideLoader = languagePluginLoader
+        const t0 = Date.now()
+        const status_el = document.getElementById('status')
+        const input_el = document.getElementById("input")
+        const output_el = document.getElementById("output")
         pyodideLoader.then(function () {
-            let dt = (Date.now() - t0) / 1000
-            document.getElementById('status').innerText = `Done (${dt} s)`
-            console.log(pyodide.runPython('import sys\nsys.version'))
+            const dt = Math.round((Date.now() - t0) / 100) / 10
+            status_el.innerText += `done (${dt} s)`
+            const python_version_output = pyodide.runPython('import sys\nsys.version')
+            console.log(python_version_output)
+            input_el.addEventListener("input", (e) => { 
+                const code_input = e.target.value
+                try {
+                    const code_output = pyodide.runPython(code_input)
+                    output_el.innerText = code_output              
+                } catch (error) {
+                    // fail silently
+                }
+            })
         })
     </script>
 </body>
