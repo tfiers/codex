@@ -4,11 +4,17 @@
     <script src="https://pyodide-cdn2.iodide.io/v0.15.0/full/pyodide.js"></script>
 </head>
 <body>
+<div id='status'>
+    Loading pyodide..
+</div>
 <script type="text/javascript">
-    // Give a more precise alias.
+    // Give a more precise alias to this Promise object.
     let pyodideLoader = languagePluginLoader
-    
+    let t0 = Date.now()
+    // When the promise resolves:
     pyodideLoader.then(function() {
+        let dt = (Date.now() - t0) / 1000
+        document.getElementById('status').innerText = `Done (${dt} s)`
         console.log(pyodide.runPython('import sys\nsys.version'))
     })
 </script>
