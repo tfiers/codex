@@ -20,7 +20,7 @@ class Tracer:
     def trace(self, frame, event, arg):
         code = frame.f_code
         filename = code.co_filename
-        if "my_data_analysis.py" in filename and event == "call":
+        if "my_data_analysis.py" in filename:
             local_vars = [
                 f"{name}={frame.f_locals[name]}"
                 for name in code.co_names + code.co_varnames
@@ -35,7 +35,7 @@ class Tracer:
             )
             print("")
             print(*line_info)
-            pprint(list(map(print_instr, dis.get_instructions(code))))
+            # pprint(list(map(print_instr, dis.get_instructions(code))))
         return self.trace
 
 

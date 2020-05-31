@@ -1,7 +1,3 @@
-from codex import start_recording
-
-start_recording()
-
 a = 6
 b = 2 * a
 results = []
