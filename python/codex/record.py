@@ -33,9 +33,9 @@ class Tracer:
                 frame.f_lineno,
                 f"({varlist})",
             )
-            print("")
             print(*line_info)
-            # pprint(list(map(print_instr, dis.get_instructions(code))))
+            print(dir(frame))
+            # pprint(list(map(print_instr, dis.get_instructions(code))), '\n')
         return self.trace
 
 
