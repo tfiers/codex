@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Codex &ndash; Code Execution GUI</title>
+</head>
+<body>
+    <pre>  line 1    a = 6                                    a: 6
+  line 2    b = 2 * a                                b: 12
+  line 5        &quot;multiline&quot;,                         
+  line 6        &quot;yos&quot;                                
+  line 4    d = [                                    d: [&#x27;multiline&#x27;, &#x27;yos&#x27;]
+  line 9    results = []                             results: []
+  line 10   for i in range(2):                       i: 0
+  line 11       c = a + b * i                        c: 6
+  line 12       results.append(c ** 2)               results: [36]
+  line 10   for i in range(2):                       i: 1
+  line 11       c = a + b * i                        c: 18
+  line 12       results.append(c ** 2)               results: [36, 324]
+  line 10   for i in range(2):                       
+  line 15   def f(x):                                f: &lt;function f&gt;
+  line 20   print(f(sum(results)))                   
+  call 15   def f(x):                                x: 360
+  call 16       d = sum([i for i in range(3)])       .0: &lt;range_iterator object&gt;
+  line 16       d = sum([i for i in range(3)])       i: 0
+  line 16       d = sum([i for i in range(3)])       i: 1
+  line 16       d = sum([i for i in range(3)])       i: 2
+return 16       d = sum([i for i in range(3)])       return: [0, 1, 2]
+  line 17       return x - d + a                     x: 360, d: 3
+return 17       return x - d + a                     return: 363
+return 20   print(f(sum(results)))                   a: 6, b: 12, d: [&#x27;multiline&#x27;, &#x27;yos&#x27;], results: [36, 324], i: 1, c: 18, f: &lt;function f&gt;, return: None</pre>
+</body>
+</html>

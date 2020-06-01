@@ -1,5 +1,7 @@
+import html
 import re
 import sys
+import webbrowser
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any, Dict, List
@@ -63,6 +65,19 @@ def process(raw_traced_lines: List[TracedLine]):
     return traced_lines
 
 
+HTML_FILENAME = "index.html"
+HTML_TEMPLATE = """<!DOCTYPE html>
+<html>
+<head>
+    <title>Codex &ndash; Code Execution GUI</title>
+</head>
+<body>
+    <pre>{}</pre>
+</body>
+</html>
+"""
+
+
 class Codex:
     def __init__(self):
         self.raw_traced_lines: List[TracedLine] = []
@@ -74,14 +89,11 @@ class Codex:
         processed_lines = process(self.raw_traced_lines)
         return "\n".join(map(str, processed_lines))
 
-
-def to_string(value: Any) -> str:
-    string = str(value)
-    if match := re.match(
-        "^<(?P<object_description>.*) at 0x[A-Z0-9]{16}>$", string
-    ):
-        string = f"<{match.group('object_description')}>"
-    return string
+    def save_as_html(self):
+        my_html = HTML_TEMPLATE.format(html.escape(str(self)))
+        with open(HTML_FILENAME, "w") as fh:
+            fh.write(my_html)
+        return HTML_FILENAME
 
 
 # We need a to wrap the trace function in a class, because it needs to be able
@@ -105,7 +117,8 @@ class Tracer:
 
             linenr = frame.f_lineno
             current_locals: Dict[str, str] = {
-                name: to_string(value) for name, value in frame.f_locals.items()
+                name: Tracer.to_string(value)
+                for name, value in frame.f_locals.items()
             }
             locals_diff = {}
             for name, current_value in current_locals.items():
@@ -131,10 +144,18 @@ class Tracer:
 
         return self.trace
 
+    def to_string(value: Any) -> str:
+        string = str(value)
+        if match := re.match(
+            "^<(?P<object_description>.*) at 0x[A-Z0-9]{16}>$", string
+        ):
+            string = f"<{match.group('object_description')}>"
+        return string
+
 
 @contextmanager
 def record():
     tracer = Tracer()
     sys.settrace(tracer.trace)
     yield
-    print(tracer.codex)
+    webbrowser.open(tracer.codex.save_as_html())
