@@ -1,5 +1,11 @@
 a = 6
 b = 2 * a
+
+d = [
+    "multiline",
+    "yos"
+]
+
 results = []
 for i in range(2):
     c = a + b * i

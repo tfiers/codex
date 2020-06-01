@@ -1,1 +1,1 @@
-from .record import start_recording
+from .record import record

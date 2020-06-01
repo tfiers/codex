@@ -1,4 +1,4 @@
-from codex import start_recording
+import codex
 
-start_recording()
-import my_data_analysis
+with codex.record():
+    import my_data_analysis

@@ -1,7 +1,7 @@
 import sys
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
-from codex.record import start_recording
+from codex.record import record
 
 import click
 
@@ -25,7 +25,7 @@ def run(script_name: str):
     The recorded execution tree (which includes copies of all intermediate
     values) can then be displayed and explored in the Codex GUI.
     """
-    start_recording()
+    record()
     import_file(script_name)
 
 
