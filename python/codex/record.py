@@ -23,32 +23,56 @@ class TracedLine:
         )
 
 
+def process(raw_traced_lines: List[TracedLine]):
+    traced_lines = raw_traced_lines.copy()
+    # Shift back `locals_diff`s of "line" events to display next to the previous line.
+    for i in range(1, len(traced_lines)):
+        prev_line = traced_lines[i - 1]
+        current_line = traced_lines[i]
+        if current_line.event == "line" and prev_line.event == "line":
+            prev_line.locals_diff = current_line.locals_diff.copy()
+            current_line.locals_diff = {}
+
+    # Remove redundant "line" events -- namely "line" events with no changed
+    # variables and the same source code as a preceding or following line.
+    # I.e. they don't add any information.
+    i = 1
+    while i < len(traced_lines) - 1:
+        prev_line = traced_lines[i - 1]
+        current_line = traced_lines[i]
+        next_line = traced_lines[i + 1]
+        if (
+            current_line.event == "line"
+            and not current_line.locals_diff
+            and (
+                current_line.source_code == prev_line.source_code
+                or current_line.source_code == next_line.source_code
+            )
+        ):
+            traced_lines.remove(current_line)
+        i += 1
+
+    # Add return value to variables list, for display.
+    for line in traced_lines:
+        if line.event == "return":
+            line.locals_diff["return"] = line.arg
+
+    # Remove duplicate first line (it's there both as a "call" and a "line").
+    traced_lines.pop(0)
+
+    return traced_lines
+
+
 class Codex:
     def __init__(self):
-        self.traced_lines: List[TracedLine] = []
+        self.raw_traced_lines: List[TracedLine] = []
 
     def record(self, new_line: TracedLine):
-        if len(self.traced_lines) > 0:
-            # Present changed variables at end of previous line.
-            prev_line = self.traced_lines[-1]
-            if prev_line.event == "line":
-                if new_line.event == "line":
-                    prev_line.locals_diff = new_line.locals_diff.copy()
-                elif prev_line.source_code == new_line.source_code and (
-                    not prev_line.locals_diff or not new_line.locals_diff
-                ):
-                    self.traced_lines.remove(prev_line)
-                else:
-                    # New line is a call or a return, with different source
-                    # code as previous line
-                    prev_line.locals_diff = {}
-        if new_line.event == "return":
-            new_line.locals_diff = {"return": new_line.arg}
-        if not (new_line.linenr == 1 and new_line.event == "call"):
-            self.traced_lines.append(new_line)
+        self.raw_traced_lines.append(new_line)
 
     def __repr__(self):
-        return "\n".join(map(str, self.traced_lines))
+        processed_lines = process(self.raw_traced_lines)
+        return "\n".join(map(str, processed_lines))
 
 
 def to_string(value: Any) -> str:
